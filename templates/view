@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ dog.dog_name }} - Perfil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --magenta: #cb6ce6;
+            --white: #ffffff;
+        }
+
+        body {
+            background: linear-gradient(to bottom, var(--magenta), var(--white));
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        .profile-image {
+            max-width: 300px;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .profile-name {
+            color: var(--magenta);
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            background-color: var(--magenta);
+            color: white;
+        }
+
+        .footer {
+            background-color: var(--magenta);
+            color: var(--white);
+            padding: 20px 0;
+            margin-top: 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .footer-social a {
+            color: var(--white);
+            margin-right: 15px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        .footer-contact {
+            text-align: right;
+        }
+
+        #map {
+            height: 300px;
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="data:image/jpeg;base64,{{ dog.profile_pic }}" alt="{{ dog.dog_name }}" class="profile-image img-fluid">
+            </div>
+            <div class="col-md-8">
+                <h1 id="dog.dog_name" class="profile-name">{{ dog.dog_name }}</h1>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3>Sobre mí</h3>
+                    </div>
+                    <div class="card-body">
+                        {{ dog.dog_description or 'No hay descripción disponible' }}
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3>Información de contacto</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <strong>Teléfono:</strong>
+                                {{ dog.phone or 'No disponible' }}
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <strong>Email:</strong>
+                                {{ dog.owner_email or 'No disponible' }}
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <strong>Dirección:</strong>
+                                {{ dog.address or 'No disponible' }}<br>
+                                {{ dog.neighborhood or '' }}<br>
+                                {{ dog.province or 'Buenos Aires' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Ubicación</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-social">
+                    <a href="#" class="text-white"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-twitter"></i></a>
+                </div>
+                <div class="footer-contact">
+                    <p class="mb-1">Contacto: info@siguiendohuellitas.com</p>
+                    <p class="mb-0">Teléfono: +54 (011) 1234-5678</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

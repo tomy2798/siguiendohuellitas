@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Perros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/lucide-icons@0.321.0/dist/lucide.min.css" rel="stylesheet">
+    
+    <style>
+        .btn-group > * {
+            margin-right: 0.25rem;
+        }
+        .btn-group > *:last-child {
+            margin-right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h1>Registro de Perros</h1>
+            </div>
+            <div class="col-auto">
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">
+                    <i data-lucide="log-out"></i>
+                </a>
+            </div>
+        </div>
+
+        <form action="{{ url_for('create_links') }}" method="POST" class="mb-4">
+            <div class="mb-3">
+                <label for="owner_name" class="form-label">Nombre del Dueño:</label>
+                <input type="text" class="form-control" id="owner_name" name="owner_name" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="owner_email" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="owner_email" name="owner_email" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Crear Enlaces</button>
+        </form>
+
+        <h2 class="mt-5">Registros Existentes</h2>
+        {% if dogs %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Estado</th>
+                        <th>Nombre del Perro</th>
+                        <th>Nombre del Dueño</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dog in dogs %}
+                    <tr>
+                        <td>
+                            {% if dog.is_completed %}
+                                <span class="badge bg-success">Completo</span>
+                            {% else %}
+                                <span class="badge bg-warning">Incompleto</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ dog.dog_name or 'No especificado' }}</td>
+                        <td>{{ dog.owner_name }}</td>
+                        <td>{{ dog.owner_email }}</td>
+                        <td>{{ dog.phone or 'No especificado' }}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('view', id=dog._id) }}" class="btn btn-sm btn-outline-info">
+                                    <i data-lucide="eye"></i>
+                                </a>
+                                <a href="{{ url_for('edit', id=dog._id, token=dog.edit_token) }}" class="btn btn-sm btn-outline-warning">
+                                    <i data-lucide="edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ dog._id }}">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Paginación -->
+            <nav>
+                <div class="pagination">
+                    {% if current_page > 1 %}
+                        <a href="{{ url_for('index', page=current_page-1) }}" class="page-link">Anterior</a>
+                    {% endif %}
+            
+                    {% for page in range(1, total_pages + 1) %}
+                        <a href="{{ url_for('index', page=page) }}" class="page-link">{{ page }}</a>
+                    {% endfor %}
+            
+                    {% if current_page < total_pages %}
+                        <a href="{{ url_for('index', page=current_page+1) }}" class="page-link">Siguiente</a>
+                    {% endif %}
+                </div>
+            </nav>
+        {% else %}
+            <p class="alert alert-info">No hay registros de mascotas disponibles.</p>
+        {% endif %}
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // Inicializar iconos
+        lucide.createIcons();
+
+        // Manejar eliminación con Axios
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const dogId = this.getAttribute('data-id');
+                
+                if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
+                    axios.post(`/delete_dog/${dogId}`)
+                        .then(response => {
+                            // Recargar la página después de eliminar
+                            window.location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Error al eliminar:', error);
+                            alert('Hubo un error al eliminar el registro');
+                        });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

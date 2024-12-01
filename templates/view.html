@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de {{ dog.dog_name }}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    
+    <style>
+
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        :root {
+            --magenta: #cb6ce6;
+            --white: #ffffff;
+            --light-purple: #c10de0;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            background: linear-gradient(
+                -45deg, 
+                var(--white), 
+                var(--magenta), 
+                var(--light-purple), 
+                var(--white),
+                var(--light-purple)
+            );
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        
+
+        /* Semi-transparent overlay to ensure readability */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1); /* Adjust opacity as needed */
+            z-index: -1;
+        }
+
+        .profile-image {
+            max-width: 100%;
+            max-height: 200px;
+            height: auto;
+            border-radius: 40%;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            background-color: var(--magenta);
+            color: white;
+        }
+
+        .footer {
+            background-color: var(--magenta);
+            color: var(--white);
+            padding: 20px 0;
+            margin-top: 20px;
+        }
+
+        /* Rest of the existing styles remain the same */
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-social a {
+            color: var(--white);
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .footer-contact {
+            text-align: right;
+        }
+        
+        #map { 
+            height: 300px; 
+            width: 100%; 
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-name {
+                text-align: center;
+            }
+            
+            .card-body {
+                text-align: center;
+            }
+            
+            #map {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- The rest of the HTML remains the same as in the previous version -->
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Columna de imagen de perfil -->
+            <div class="col-md-4 text-center">
+                <img src="data:image/jpeg;base64,{{ dog.profile_pic }}" 
+                     alt="{{ dog.dog_name }}" 
+                     class="profile-image img-fluid">
+            </div>
+            
+            <!-- Columna de información -->
+            <div class="col-md-8">
+                <h1 class="profile-name">{{ dog.dog_name }}</h1>
+                
+                <!-- Tarjeta de descripción -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3>Sobre mí</h3>
+                    </div>
+                    <div class="card-body">
+                        {{ dog.dog_description or 'No hay descripción disponible' }}
+                    </div>
+                </div>
+                
+                <!-- Tarjeta de información de contacto -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3>Información de contacto</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <strong>Teléfono:</strong>
+                                <p>{{ dog.phone or 'No disponible' }}</p>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <strong>Email:</strong>
+                                <p>{{ dog.owner_email or 'No disponible' }}</p>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <strong>Dirección:</strong>
+                                <p>
+                                    {{ dog.address or 'No disponible' }}<br>
+                                    {{ dog.neighborhood or '' }}<br>
+                                    {{ dog.province or 'Buenos Aires' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tarjeta de ubicación -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Ubicación</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer remains the same -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-social">
+                    <a href="#" class="text-white"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-twitter"></i></a>
+                </div>
+                <div class="footer-contact">
+                    <p class="mb-1">Contacto: info@siguiendohuellitas.com</p>
+                    <p class="mb-0">Teléfono: +54 (011) 1234-5678</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts remain the same -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dirección completa
+        var fullAddress = "{{ dog.address or '' }}, {{ dog.neighborhood or '' }}, {{ dog.province or 'Buenos Aires' }}";
+        
+        // Inicializar mapa
+        var map = L.map('map').setView([-34.6037, -58.3816], 13); // Coordenadas de Buenos Aires por defecto
+        
+        // Añadir capa de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Usar servicio de geocodificación de OpenStreetMap
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    var lat = parseFloat(data[0].lat);
+                    var lon = parseFloat(data[0].lon);
+                    
+                    // Centrar mapa en la ubicación
+                    map.setView([lat, lon], 15);
+                    
+                    // Añadir marcador
+                    L.marker([lat, lon]).addTo(map)
+                        .bindPopup(fullAddress)
+                        .openPopup();
+                }
+            })
+            .catch(error => {
+                console.error('Error geocoding address:', error);
+            });
+    });
+    </script>
+
+    
+</body>
+</html>

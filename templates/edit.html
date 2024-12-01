@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil de Mascota - Capturando Huellitas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#cb6ce6] via-white to-[#cb6ce6]">
+    <!-- Header -->
+    <header class="bg-white shadow-md py-4">
+        <div class="container mx-auto flex items-center justify-between px-4">
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="h-14 sm:h-14">
+                <h1 class="text-xl sm:text-3xl font-bold text-black">Siguiendo Huellitas</h1>
+            </div>
+            <i class="ri-edit-line text-xl sm:text-2xl text-black"></i>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <form action="{{ url_for('edit', id=id, token=token) }}" method="POST" enctype="multipart/form-data" 
+              class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-4 sm:p-6">
+            
+            <h2 class="text-xl sm:text-2xl font-semibold text-[#cb6ce6] mb-4 sm:mb-6">Editar Perfil de Mascota</h2>
+            
+            <!-- Profile Picture Upload -->
+            <div class="mb-4 sm:mb-6">
+                <label class="block text-black font-bold mb-2">Foto de Perfil</label>
+                <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                    <div id="profilePreview" class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                        {% if dog.profile_pic %}
+                            <img src="data:image/jpeg;base64,{{ dog.profile_pic }}" 
+                                 alt="Foto de Perfil" 
+                                 class="w-full h-full object-cover">
+                        {% else %}
+                            <i class="ri-dog-line text-4xl text-gray-500"></i>
+                        {% endif %}
+                    </div>
+                    <input 
+                        type="file" 
+                        name="profile_pic"
+                        accept="image/*" 
+                        id="profilePicUpload"
+                        class="hidden"
+                        onchange="previewProfilePic(event)"
+                    >
+                    <label 
+                        for="profilePicUpload" 
+                        class="w-full sm:w-auto px-4 py-2 bg-[#cb6ce6] text-white rounded-md hover:bg-[#b15ac9] transition cursor-pointer text-center"
+                    >
+                        Subir Foto
+                    </label>
+                </div>
+            </div>
+
+            <!-- Form Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Nombre de la Mascota -->
+                <div class="relative">
+                    <label class="block text-black font-bold mb-2">Nombre de la Mascota</label>
+                    <div class="flex items-center border rounded-md">
+                        <i class="ri-dog-line text-xl ml-3 text-[#cb6ce6]"></i>
+                        <input 
+                            type="text" 
+                            name="dog_name"
+                            value="{{ dog.dog_name }}"
+                            placeholder="Nombre de la mascota" 
+                            class="w-full p-2 pl-2 focus:outline-none" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Dirección -->
+                <div class="relative">
+                    <label class="block text-black font-bold mb-2">Dirección</label>
+                    <div class="flex items-center border rounded-md">
+                        <i class="ri-map-pin-line text-xl ml-3 text-[#cb6ce6]"></i>
+                        <input 
+                            type="text" 
+                            name="address"
+                            value="{{ dog.address }}"
+                            placeholder="Dirección" 
+                            class="w-full p-2 pl-2 focus:outline-none" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Teléfono -->
+                <div class="relative">
+                    <label class="block text-black font-bold mb-2">Teléfono</label>
+                    <div class="flex items-center border rounded-md">
+                        <i class="ri-phone-line text-xl ml-3 text-[#cb6ce6]"></i>
+                        <input 
+                            type="tel" 
+                            name="phone"
+                            value="{{ dog.phone }}"
+                            placeholder="Número de teléfono" 
+                            class="w-full p-2 pl-2 focus:outline-none" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Nombre del Dueño -->
+                <div class="relative">
+                    <label class="block text-black font-bold mb-2">Nombre del Dueño</label>
+                    <div class="flex items-center border rounded-md">
+                        <i class="ri-user-line text-xl ml-3 text-[#cb6ce6]"></i>
+                        <input 
+                            type="text" 
+                            name="owner_name"
+                            value="{{ dog.owner_name }}"
+                            placeholder="Nombre completo" 
+                            class="w-full p-2 pl-2 focus:outline-none" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Email del Dueño -->
+                <div class="relative">
+                    <label class="block text-black font-bold mb-2">Email del Dueño</label>
+                    <div class="flex items-center border rounded-md">
+                        <i class="ri-mail-line text-xl ml-3 text-[#cb6ce6]"></i>
+                        <input 
+                            type="email" 
+                            name="owner_email"
+                            value="{{ dog.owner_email }}"
+                            placeholder="Correo electrónico" 
+                            class="w-full p-2 pl-2 focus:outline-none" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Barrio -->
+                <div class="relative">
+                    <label class="block text-black font-bold mb-2">Barrio</label>
+                    <div class="flex items-center border rounded-md">
+                        <i class="ri-map-pin-line text-xl ml-3 text-[#cb6ce6]"></i>
+                        <input 
+                            type="text" 
+                            name="neighborhood"
+                            value="{{ dog.neighborhood }}"
+                            placeholder="Barrio" 
+                            class="w-full p-2 pl-2 focus:outline-none" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Provincia -->
+                <div class="relative">
+                    <label class="block text-black font-bold mb-2">Provincia</label>
+                    <div class="flex items-center border rounded-md">
+                        <i class="ri-map-pin-line text-xl ml-3 text-[#cb6ce6]"></i>
+                        <input 
+                            type="text" 
+                            name="province"
+                            value="{{ dog.province }}"
+                            placeholder="Provincia" 
+                            class="w-full p-2 pl-2 focus:outline-none" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Descripción de la Mascota -->
+                <div class="relative md:col-span-2">
+                    <label class="block text-black font-bold mb-2">Descripción de la Mascota</label>
+                    <textarea 
+                        name="dog_description"
+                        placeholder="Describe a tu mascota..." 
+                        class="w-full p-2 border rounded-md focus:outline-none h-24"
+                        required
+                    >{{ dog.dog_description }}</textarea>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button 
+                    type="submit"
+                    class="w-full bg-[#cb6ce6] text-white py-3 rounded-md hover:bg-[#b15ac9] transition"
+                >
+                    Guardar Cambios
+                </button>
+                <a 
+                    href="{{ url_for('view', id=id) }}"
+                    class="w-full bg-gray-200 text-black py-3 rounded-md hover:bg-gray-300 transition text-center"
+                >
+                    Ver Datos
+                </a>
+            </div>
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#cb6ce6] text-white py-4 sm:py-6 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                <div class="flex space-x-4">
+                    <a href="https://www.instagram.com/siguiendohuellitas/" class="hover:text-[#cb6ce6] transition">
+                        <i class="ri-instagram-line"></i> Instagram
+                    </a>
+                    <a href="#" class="hover:text-[#cb6ce6] transition">
+                        <i class="ri-facebook-line"></i> Facebook
+                    </a>
+                    <a href="#" class="hover:text-[#cb6ce6] transition">
+                        <i class="ri-twitter-line"></i> Twitter
+                    </a>
+                </div>
+                <div class="text-center sm:text-right">
+                    <p>Contacto: capturandohuellitas@gmail.com</p>
+                    <p>Teléfono: +54 (011) 2884-3821</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        function previewProfilePic(event) {
+            const preview = document.getElementById('profilePreview');
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = function() {
+                const img = document.createElement('img');
+                img.src = reader.result;
+                img.classList.add('w-full', 'h-full', 'object-cover');
+                
+                // Clear previous content
+                preview.innerHTML = '';
+                preview.appendChild(img);
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>

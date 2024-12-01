@@ -1,0 +1,25 @@
+name: flask-app
+type: 'python:3.9'
+
+dependencies:
+    python3:
+        - pip
+
+web:
+    commands:
+        start: "gunicorn -b 0.0.0.0:$PORT app:app"
+
+relationships:
+    database: "db:mysql"
+
+hooks:
+    build: |
+        pip install -r requirements.txt
+    deploy: |
+        python manage.py migrate
+
+mounts:
+    '/tmp': 'shared:files/tmp'
+    '/logs': 'shared:files/logs'
+
+disk: 1024
